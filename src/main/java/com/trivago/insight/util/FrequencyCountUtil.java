@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Stream;
+//Get rid of this class. It does nothing. Clients can do the implementation below directly
 
 /**
  * Count the number of hotel or amenity per User
