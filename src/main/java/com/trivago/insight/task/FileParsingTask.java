@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.stream.Stream;
 
 @Component
-public class FileParsingTask implements Runnable{
+public class FileImportService implements InitializingBean{
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Value("${selections.filepath}")
@@ -23,25 +23,27 @@ public class FileParsingTask implements Runnable{
 
     @Autowired
     private FrequencyCountUtil counter;
+    
+    
 
     @Override
-    public void run() {
+    public void afterPropertiesSet() {
 
             long startTime = System.currentTimeMillis();
-            try(Stream<String[]> clickStream = FileDataStream.getDataStream(clicksFilePath)){
-                clickStream.forEach(click -> counter.updateHotelClick(click[1], Integer.parseInt(click[2])));
+           
+            try(Stream<String> csvLine = Files.line(path)){
+                String[] cells = split(csvLine);
+                int userId= ..
+                userRegistry.get(userId).recordHotesClick(...);
+                
             } catch (IOException e) {
-                logger.error("Error reading " + clicksFilePath, e);
+                throw new RuntimeException(e);
             }
 
             long endTime = System.currentTimeMillis();
             System.out.println("That took " + (endTime - startTime) + " milliseconds");
 
-        try(Stream<String[]> selectionStream = FileDataStream.getDataStream(selectionsFilePath)){
-                selectionStream.forEach(selection -> counter.updateUserSelection(selection[1], Integer.parseInt(selection[2])));
-            } catch (IOException e) {
-            logger.error("Error reading " + selectionsFilePath, e);
-        }
+            //TODO implement the other one in the same manner
 
     }
 }
