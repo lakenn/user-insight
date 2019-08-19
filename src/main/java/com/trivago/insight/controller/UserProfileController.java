@@ -14,6 +14,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 @RestController
 @RequestMapping("/api/user-profile")
 public class UserProfileController {
+    // rename to UserStatsController for consistency ... also it's a stats not profile
 
     @Autowired
     private UserRegistry userRegistry;
