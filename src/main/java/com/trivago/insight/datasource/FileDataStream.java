@@ -1,5 +1,5 @@
 package com.trivago.insight.datasource;
-
+//get rid of this class. it serves no purpose. CLients can do Files.lines directly. 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
