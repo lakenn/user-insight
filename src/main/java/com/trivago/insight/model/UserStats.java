@@ -8,6 +8,9 @@ import java.util.stream.Collectors;
 public class UserStats {
 
     private String userId;
+    //actually i was wrong, it's better to use Map<Integer, Integer> and use map.compute() instead of map.computeIfAbsent() in 
+    //your case in order to avoid concurrent issue
+    
     private Map<Integer, AtomicInteger> hotelClickCountMap = new ConcurrentHashMap<>();
     private Map<Integer, AtomicInteger> amenitySelectCountMap = new ConcurrentHashMap<>();
 
@@ -26,14 +29,12 @@ public class UserStats {
 
     public List<Integer> getTopSelectedAmenities(int topN) {
 
-        List<Integer> result = amenitySelectCountMap.entrySet()
+        return amenitySelectCountMap.entrySet()
                 .stream()
                 .sorted((amenity, amenity2) -> Integer.compare(amenity2.getValue().get(), amenity.getValue().get()))
                 .limit(topN)
                 .map(e -> e.getKey())
                 .collect(Collectors.toList());
-
-        return result;
     }
 
     public List<Integer> getTopClickedHotels(int topN) {
@@ -42,13 +43,11 @@ public class UserStats {
         // so the map is relatively small and scanning through it is quick
         // and the api are used by 3 teams so this method is not frequently called
 
-        List<Integer> result = hotelClickCountMap.entrySet()
+        return hotelClickCountMap.entrySet()
                 .stream()
                 .sorted((hotel, hotel2) -> Integer.compare(hotel2.getValue().get(), hotel.getValue().get()))
                 .limit(topN)
                 .map(e -> e.getKey())
                 .collect(Collectors.toList());
-
-        return result;
     }
 }
