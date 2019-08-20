@@ -1,18 +1,20 @@
-package com.trivago.insight.task;
+package com.trivago.insight.service;
 
-import com.trivago.insight.datasource.FileDataStream;
 import com.trivago.insight.util.FrequencyCountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.stream.Stream;
 
 @Component
-public class FileParsingTask implements Runnable{
+public class FileImportService implements InitializingBean {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Value("${selections.filepath}")
@@ -25,23 +27,29 @@ public class FileParsingTask implements Runnable{
     private FrequencyCountUtil counter;
 
     @Override
-    public void run() {
-
-            long startTime = System.currentTimeMillis();
-            try(Stream<String[]> clickStream = FileDataStream.getDataStream(clicksFilePath)){
-                clickStream.forEach(click -> counter.updateHotelClick(click[1], Integer.parseInt(click[2])));
-            } catch (IOException e) {
-                logger.error("Error reading " + clicksFilePath, e);
-            }
-
-            long endTime = System.currentTimeMillis();
-            System.out.println("That took " + (endTime - startTime) + " milliseconds");
-
-        try(Stream<String[]> selectionStream = FileDataStream.getDataStream(selectionsFilePath)){
-                selectionStream.forEach(selection -> counter.updateUserSelection(selection[1], Integer.parseInt(selection[2])));
-            } catch (IOException e) {
-            logger.error("Error reading " + selectionsFilePath, e);
+    public void afterPropertiesSet() throws IOException {
+        try(Stream<String> csvLine = Files.lines(Paths.get(clicksFilePath))){
+            csvLine.forEach(
+                    line ->
+                    {
+                        String[] cells = line.split(",");
+                        String userId = cells[1];
+                        int hotelId = Integer.parseInt(cells[2]);
+                        counter.updateHotelClick(userId, hotelId);
+                    }
+            );
         }
 
+        try(Stream<String> csvLine = Files.lines(Paths.get(selectionsFilePath))){
+            csvLine.forEach(
+                    line ->
+                    {
+                        String[] cells = line.split(",");
+                        String userId = cells[1];
+                        int amenityId = Integer.parseInt(cells[2]);
+                        counter.updateUserSelection(userId, amenityId);
+                    }
+            );
+        }
     }
 }

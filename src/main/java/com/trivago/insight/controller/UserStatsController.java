@@ -12,19 +12,24 @@ import java.util.List;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @RestController
-@RequestMapping("/api/user-profile")
-public class UserProfileController {
+@RequestMapping("/api/user-stats")
+public class UserStatsController {
 
     @Autowired
     private UserRegistry userRegistry;
 
-    @RequestMapping(value = "/top-amenities/{userid}", method=GET)
-    public List<Integer> getTopAmenitiesByUserId(@PathVariable("userId") String userId, @RequestParam(defaultValue = "10") int topN){
+    @RequestMapping(value = "/top-amenities/{userId}", method=GET)
+    public List<Integer> getTopAmenitiesByUserId(@PathVariable("userId") String userId,
+                                                 @RequestParam(defaultValue = "10") int topN){
+
         return userRegistry.getUserStats(userId).getTopSelectedAmenities(topN);
     }
 
     @RequestMapping(value = "/top-hotels/{userId}", method=GET)
-    public List<Integer> getTopHotelsByUserId(@PathVariable("userId") String userId, @RequestParam(defaultValue = "10") int topN){
+    public List<Integer> getTopHotelsByUserId(@PathVariable("userId") String userId,
+                                              @RequestParam(defaultValue = "10") int topN){
+
         return userRegistry.getUserStats(userId).getTopClickedHotels(topN);
     }
+
 }

@@ -6,7 +6,7 @@
 ### Questions and Ans
 + What are the assumptions that you made during the implementation?
     1. Each item count is equal weighted across time
-	2. Top N is a varaible provided by the api caller as request time
+	2. Top K is a varaible provided by the api caller as request time
 	3. Number of Hotel clicks / Amenity selections per User are less than a thousand
 	4. The api are used by 3 teams so this method is not frequently called
 
@@ -19,9 +19,10 @@
    1.  the response time of the api should be very quick.  Think it can handle hundreds of requests in a second
 
 + If you had more time, how would you improve your solution?
-    1.  Use distributed computing (map-reduce) for counting.  (eg. spark/storm) if there are multiple big files
+    1. Improving the sorting. Convert the first K elements to a min-heap of size K. At the top of the heap will be your smallest element.
+       Successively replace the smallest element with each of the remaining N - K elements in the array. Time complexity -- O(nlogK)
+    2. Use distributed computing (map-reduce) for counting.  (eg. spark/storm) if there are multiple big files
 
-	2. Use distributed memory eg. apache Ignite or redis to store the count of items
 
 + What comments would you expect when this goes to a code review?
   1.  I think the program is in good quality given the current requirements
@@ -40,4 +41,4 @@
   2. Worker updates UserStats concurrently
   3. Add two caches for the sorted result of ConcurrentHashMap in UserStats.java
   4. For each user, when the ConcurrentHashMap in UserStats gets updated, clear the cache.
-  5. GetTopN will read from the cache if the cache is not emptpy ; otherwise rebuild cache (sort)
+  5. GetTop K will read from the cache if the cache is not emptpy ; otherwise rebuild cache (sort again)
